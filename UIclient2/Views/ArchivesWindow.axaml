@@ -1,0 +1,90 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:UIclient2.ViewModels"
+        xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="UIclient2.Views.ArchivesWindow"
+        x:DataType="vm:ArchivesWindowViewModel"
+        Title="Linux Defender"
+        Background="#1C214F"
+        Width="1000"
+        Height="600">
+	<Design.DataContext>
+		<vm:ArchivesWindowViewModel/>
+	</Design.DataContext>
+
+	<Canvas>
+		<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="100">
+			<MenuItem Header="_Home" Foreground="White" FontSize="20" Command="{Binding HomeCommand}"/>
+			<MenuItem Header="_Archives" Foreground="White" FontSize="20"/>
+			<MenuItem Header="_Settings" Foreground="White" FontSize="20" Command="{Binding SettingsCommand}"/>
+		</StackPanel>
+		
+		<Border Canvas.Left="250" Canvas.Top="90" Background="#EE1154" Width="660" Height="50" CornerRadius="10">
+            <TextBlock Text="Archives" FontSize="24" Margin="10" Foreground="White" HorizontalAlignment="Center"/>
+        </Border>
+
+		<Button Canvas.Left="250" Canvas.Top="200" Width="150" Height="30" Command="{Binding VirusScanCommand}" Foreground="White" FontSize="18" Content="Viruses">
+			<Button.Styles>
+				<Style>
+					<Style.Resources>
+						<SolidColorBrush x:Key="ButtonBackground" Color="#EE1154"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF6688"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#FF4D7A"/>
+					</Style.Resources>
+				</Style>
+			</Button.Styles>
+		</Button>
+
+		<Button Canvas.Left="600" Canvas.Top="200" Width="150" Height="30" Command="{Binding BlockedCommand}" Foreground="White" FontSize="18" Content="Blocked">
+			<Button.Styles>
+				<Style>
+					<Style.Resources>
+						<SolidColorBrush x:Key="ButtonBackground" Color="#EE1154"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF6688"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#FF4D7A"/>
+					</Style.Resources>
+				</Style>
+			</Button.Styles>
+		</Button>
+
+		<controls:DataGrid x:Name="DataTable1"
+                           ItemsSource="{Binding DataForTable1}"
+                           Background="#EE1154"
+                           Foreground="White"
+                           AutoGenerateColumns="False"
+                           IsVisible="{Binding IsTable1Visible}"
+                           Canvas.Left="250"
+                           Canvas.Top="230"
+						   Width="150">
+			<controls:DataGrid.Columns>
+				<controls:DataGridTextColumn Header="Name" Binding="{Binding}"/>
+			</controls:DataGrid.Columns>
+		</controls:DataGrid>
+
+		<controls:DataGrid x:Name="DataTable2"
+                   ItemsSource="{Binding DataForTable2}"
+                   Background="#EE1154"
+                   Foreground="White"
+                   AutoGenerateColumns="False"
+                   IsVisible="{Binding IsTable2Visible}"
+                   Canvas.Left="600"
+                   Canvas.Top="230"
+                   Width="150">
+			<controls:DataGrid.Columns>
+				<controls:DataGridTextColumn Header="Name" Binding="{Binding Key}"/>
+				<controls:DataGridTextColumn Header="PID" Binding="{Binding Value}" />
+				<controls:DataGridTemplateColumn Header="Status">
+					<controls:DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Content="Blocked" Click="OpenMenu_Click" Background="Transparent" Foreground="White"/>
+						</DataTemplate>
+					</controls:DataGridTemplateColumn.CellTemplate>
+				</controls:DataGridTemplateColumn>
+			</controls:DataGrid.Columns>
+		</controls:DataGrid>
+
+	</Canvas>
+</Window>
