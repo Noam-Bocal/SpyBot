@@ -10,6 +10,11 @@
 #include <fstream>
 #include <ctime>   
 
+#define DEVICE_FILE "/dev/spybot"
+#define SPYBOT_IOC_MAGIC 'k'
+#define SPYBOT_IOC_SEND _IOWR(SPYBOT_IOC_MAGIC, 1, int[2])
+#define SPYBOT_IOC_RECV _IOWR(SPYBOT_IOC_MAGIC, 1, int)
+
 //client requests
 #define SCAN_REQUEST 100 
 #define SUSPICIOUS_PROCESSES_LIST_REQUEST 101 

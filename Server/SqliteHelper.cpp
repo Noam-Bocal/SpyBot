@@ -66,9 +66,30 @@ bool SqliteHelper::addIP(string ip, string DateAdded, string Source) {
 }
 
 bool SqliteHelper::addHASH(string FileName, string FilePath, string FileHash_SHA256, string DateAdded, bool Encrypted, string SourceDetection, string IsolationStatus) {
-	string query = "";
-	query = query + "INSERT INTO " + HASHES_TABLE + "(FileName, FilePath, FileHash_SHA256, DateAdded, Encrypted, SourceDetection, IsolationStatus) VALUES('" + FileName + "', '" + FilePath + "', '" + FileHash_SHA256 + "', '" + DateAdded + "', " + std::to_string(Encrypted) + ", '" + SourceDetection + "', '" + IsolationStatus + "');";
-	char** errMessage = nullptr;
-	return sqlite3_exec(_db, query.c_str(), nullptr, nullptr, errMessage) == SQLITE_OK;
+	 string encryptedStr = Encrypted ? "True" : "False";
+
+	std::string query = std::string("INSERT INTO ") + HASHES_TABLE + std::string("(FileName, FilePath, FileHash_SHA256, DateAdded, Encrypted, SourceDetection, IsolationStatus) VALUES(?, ?, ?, ?, ?, ?, ?);");
+    sqlite3_stmt* stmt = nullptr;
+    
+    if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, FileName.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, FilePath.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 3, FileHash_SHA256.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 4, DateAdded.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 5, encryptedStr.c_str(), -1, SQLITE_STATIC); // Use encryptedStr
+        sqlite3_bind_text(stmt, 6, SourceDetection.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 7, IsolationStatus.c_str(), -1, SQLITE_STATIC);
+        
+        if (sqlite3_step(stmt) == SQLITE_DONE) {
+            sqlite3_finalize(stmt);
+            return true;
+        }
+    }
+    
+    if (stmt) {
+        sqlite3_finalize(stmt);
+    }
+    
+    return false;
 }
 

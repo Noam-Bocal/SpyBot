@@ -55,7 +55,7 @@ string RequestHandler::scan(RequestInfo reqInfo)
 	ScanRequest scanRequest = JsonRequestPacketDeserializer::deserializeScanRequest(reqInfo.buffer);
 	std::map<string, int> res;
 	try {
-		res = Helper::yaraCommunicator("python3 \"/home/noam/implementations/yara_scanner/yara_main.py", scanRequest.scan_type, scanRequest.path_to_scan, scanRequest.recursive);
+		res = Helper::yaraCommunicator("python3 \"/home/noam/Desktop/implementations/yara_scanner/yara_main.py", scanRequest.scan_type, scanRequest.path_to_scan, scanRequest.recursive);
 	}
 	catch (std::exception& e)
 	{
@@ -130,15 +130,20 @@ string RequestHandler::updateVirusTable(RequestInfo reqInfo)
 
 int RequestHandler::communicateWithDriver(int action, int target_pid)
 {
- 	int fd = open("/dev/spybot", O_RDWR);
+   int fd = open(DEVICE_FILE, O_RDWR);
+    if (fd < 0) {
+        //perror("Failed to open the device file");
+    }
 
 	int args[2] = {action, target_pid};
 	int result = 0;
 	//send the action and pid
-	ioctl(fd, SPYBOT_IOC_SIGNAL, args);
+	ioctl(fd, SPYBOT_IOC_SEND, args);
 	//get the result from the driver(success - 1, fail - 0);
-	ioctl(fd, SPYBOT_IOC_SIGNAL, &result);
-	return result;	
+	ioctl(fd, SPYBOT_IOC_RECV, &result);
+    close(fd);
+
+	return result;
 }
 
 

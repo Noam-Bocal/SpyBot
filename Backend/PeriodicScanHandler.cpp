@@ -1,7 +1,8 @@
 #include "PeriodicScanHandler.h"
+#include <cstdlib>
 
-int PeriodicScanHandler::_time = 60; // Default value for time
-string PeriodicScanHandler::_folder = "/home/noam/implementations/periodic scan files"; // Default folder path
+int PeriodicScanHandler::_time = 20; // Default value for time
+string PeriodicScanHandler::_folder = "/home/noam/Desktop/implementations/periodic scan files"; // Default folder path
 std::mutex PeriodicScanHandler::_lock;
 
 string PeriodicScanHandler::handleRequest(RequestInfo reqInfo) {
@@ -49,36 +50,36 @@ std::string PeriodicScanHandler::getFolder(const RequestInfo &reqInfo)
 }
 
 void PeriodicScanHandler::periodicScan() {
-    while (true) {
+    while (true) {        
         try {
-            std::this_thread::sleep_for(std::chrono::minutes(_time));
-            std::map<std::string, int> res = Helper::yaraCommunicator("python3 \"/home/noam/implementations/yara_scanner/yara_main.py\"", "--scan-dir", _folder, "--recursive");
+            std::this_thread::sleep_for(std::chrono::seconds(_time));
+            sctScan();
+            idtScan();
+            /*std::map<std::string, int> res = Helper::yaraCommunicator("python3 \"/home/noam/Desktop/implementations/yara_scanner/yara_main.py\"", "--scan-dir", _folder, "--recursive");
             for (auto &item : res) {
                 if (item.second == 1) { // found a virus
                     time_t now = time(0); 
                     char* dt = ctime(&now);  
                     dt[strcspn(dt, "\n")] = '\0';  // Trim newline
-                    string message = string(dt) + " - " + item.first + " - MALICIOUS";
-                    writeToScanResults(message);
-                    popUp(message);
+                    string message = item.first + " - MALICIOUS";
                     bool updateRes = Helper::updateVirusTables(item.first);
+                    writeToScanResults(string(dt) + " - " + message);
+                    popUp(message);
                 }
-            }
+            }*/
+
             //packetScan();
             //portsConnectionsScan();
         } catch (const std::exception& e) {
-            std::cout << "Error during periodic scan: " + string(e.what()) << std::endl;
+            std::cout << "Error aaa during periodic scan: " + string(e.what()) << std::endl;
         }
     }
 }
 
 void PeriodicScanHandler::packetScan() {
-    FILE* pipe = popen("sudo -S /bin/python3 /home/noam/implementations/network_scanner/net_scan.py", "r+");
+    FILE* pipe = popen("sudo /bin/python3 /home/noam/Desktop/implementations/network_scanner/net_scan.py", "r");
     if (!pipe)
-        throw std::runtime_error("Failed to open pipe...");
-    string sudoPassword = "123456\n"; //add a request to ask from the user
-    fwrite(sudoPassword.c_str(), 1, sudoPassword.size(), pipe);
-    fflush(pipe);
+        throw std::runtime_error("Failed to open pipe...");    
     char buffer[128];
     while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
         const char* pidStart = strstr(buffer, "(PID: ");
@@ -88,30 +89,84 @@ void PeriodicScanHandler::packetScan() {
             if (pidEnd) {
                 string pidString(pidStart, pidEnd - pidStart);
                 int pid = std::stoi(pidString);
+                blockPid(pid);
                 time_t now = time(0); 
                 char* dt = ctime(&now);  
                 dt[strcspn(dt, "\n")] = '\0';  // Trim newline
-                string message = string(dt) + " - " + std::to_string(pid) + " Found communicating with malicious IP";
-                writeToScanResults(message);
-                popUp(message);
+                string message = std::to_string(pid) + " Found communicating with malicious IP";
                 bool updateRes = Helper::updateVirusTables(std::to_string(pid));
+                writeToScanResults(string(dt) + " - " + message);
+                popUp(message);                                
             }
         }
     }
     pclose(pipe);
 }
 
+void PeriodicScanHandler::blockPid(int pid){
+    int fd = open(DEVICE_FILE, O_RDWR);
+    if (fd < 0) {
+        //perror("Failed to open the device file");
+    }
+
+	int args[2] = {1, 0};
+	int result = 0;
+	//send the action and pid
+	ioctl(fd, SPYBOT_IOC_SEND, args);
+	//get the result from the driver(success - 1, fail - 0);
+	ioctl(fd, SPYBOT_IOC_RECV, &result);
+    close(fd);
+}
+
+void PeriodicScanHandler::sctScan(){
+    int fd = open(DEVICE_FILE, O_RDWR);
+    if (fd < 0) {
+        //perror("Failed to open the device file");
+    }
+
+	int args[2] = {3, 0};
+	int result = 0;
+	//send the action and pid
+	ioctl(fd, SPYBOT_IOC_SEND, args);
+	//get the result from the driver(success - 1, fail - 0);
+	ioctl(fd, SPYBOT_IOC_RECV, &result);
+    close(fd);
+	if(result != -1){
+        popUp("sct alert: " + std::to_string(result));
+    }
+    else{
+        popUp("sct ok.");
+    }
+}
+
+void PeriodicScanHandler::idtScan(){
+    int fd = open(DEVICE_FILE, O_RDWR);
+    if (fd < 0) {
+        //perror("Failed to open the device file");
+    }
+
+	int args[2] = {5, 0};
+	int result = 0;
+	//send the action and pid
+	ioctl(fd, SPYBOT_IOC_SEND, args);
+	//get the result from the driver(success - 1, fail - 0);
+	ioctl(fd, SPYBOT_IOC_RECV, &result);
+    close(fd);
+	if(result != -1){
+        popUp("idt alert: " + std::to_string(result));
+    }
+    else{
+        popUp("idt ok.");
+    }
+}
+
 void PeriodicScanHandler::portsConnectionsScan() {
-    FILE* pipe = popen("sudo -S /bin/python3 /home/noam/implementations/network_scanner/scanner.py", "r+");
+    FILE* pipe = popen("sudo /bin/python3 /home/noam/Desktop/implementations/network_scanner/scanner.py", "r+");
     if (!pipe)
         throw std::runtime_error("Failed to open pipe...");
-
-    string sudoPassword = "123456\n"; //add a request to ask from the user
-    fwrite(sudoPassword.c_str(), 1, sudoPassword.size(), pipe);
-    fflush(pipe);
     
     char buffer[128];
-    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
         string line(buffer); // Convert char array to string
 
         size_t pos = line.find_first_of(' '); // Find the first space character
@@ -126,19 +181,21 @@ void PeriodicScanHandler::portsConnectionsScan() {
                 time_t now = time(nullptr);
                 char* dt = ctime(&now);
                 dt[strcspn(dt, "\n")] = '\0'; // Trim newline
-                string message = string(dt) + " - Computer " + ip + " found sending suspicious amount of packets to port " + protocol;
-                writeToScanResults(message);
-                popUp(message);
+                string message = "Computer " + ip + " found sending suspicious amount of packets to port " + protocol;
                 bool updateRes = Helper::updateVirusTables(ip);
+                writeToScanResults(string(dt) + " - " + message);
+                popUp(message);
             }
         }
     }
+
+    
     pclose(pipe);
 }
 
 void PeriodicScanHandler::writeToScanResults(const string& message) {
     std::lock_guard<std::mutex> guard(_lock);
-    std::ofstream outputFile("/home/noam/implementations/Backend/periodic_scan_results.txt", std::ios::app);
+    std::ofstream outputFile("/home/noam/Desktop/implementations/Backend/periodic_scan_results.txt", std::ios::app);
     if (!outputFile.is_open()) {
         throw std::runtime_error("Failed to open output file...");
     }
@@ -164,6 +221,8 @@ void PeriodicScanHandler::popUp(const std::string& message) {
     g_object_unref(notification);
     notify_uninit();
 }
+
+
 
 void PeriodicScanHandler::notificationClosed(NotifyNotification *notification, gpointer data) {
     std::cout << "Notification closed" << std::endl;

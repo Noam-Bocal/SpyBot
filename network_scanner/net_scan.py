@@ -4,7 +4,7 @@ import psutil
 
 IPS_TABLE = "BlackListIPs"
 SELECT_QUERY = f"SELECT * FROM {IPS_TABLE} WHERE IPAddress=?"
-DB_NAME = "/home/noam/implementations/Server/ServerData.db"
+DB_NAME = "/home/noam/Desktop/implementations/Server/ServerData.db"
 
 def filter(packet):
     return TCP in packet or UDP in packet or ICMP in packet or packet.haslayer(IP)

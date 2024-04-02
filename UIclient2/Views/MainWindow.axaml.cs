@@ -11,7 +11,7 @@ namespace UIclient2.Views
 {
     public class YaraData
     {
-        public string pathToYara { get; set; } = "python3 \"/home/noam/implementations/yara_scanner/yara_main.py";
+        public string pathToYara { get; set; } = "python3 \"/home/noam/Desktop/implementations/yara_scanner/yara_main.py";
         public string pathToScan { get; set; }
         public string scanType { get; set; }
         public string recursive { get; set; }
@@ -34,9 +34,8 @@ namespace UIclient2.Views
                 string[] results2 = await Task.Run(() => yara_scan("/var/tmp", "--scan-dir", "--recursive"));
                 string[] results3 = await Task.Run(() => yara_scan("/usr/share/applications", "--scan-dir", "--recursive"));
                 string[] results4 = await Task.Run(() => yara_scan("/home/noam/.cache", "--scan-dir", "--recursive"));
-                string[] results5 = await Task.Run(() => yara_scan("/home/noam", "--scan-dir", ""));
 
-                final_results = results1.Concat(results2).Concat(results3).Concat(results4).Concat(results5).ToArray();
+                final_results = results1.Concat(results2).Concat(results3).Concat(results4).ToArray();
 
                 ResultsScanWindow resultsScanWindow = new ResultsScanWindow(final_results);
                 resultsScanWindow.Show();

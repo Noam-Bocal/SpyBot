@@ -1,0 +1,1 @@
+cmd_/home/noam/Desktop/implementations/Driver/Module.symvers := sed 's/\.ko$$/\.o/' /home/noam/Desktop/implementations/Driver/modules.order | scripts/mod/modpost -m -a  -o /home/noam/Desktop/implementations/Driver/Module.symvers -e -i Module.symvers   -T -

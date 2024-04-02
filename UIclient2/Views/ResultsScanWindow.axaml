@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UIclient2.ResultsScanWindow"
         Title="Linux Defender"
-        Background="#1C214F"
+        Background="#323232"
         Width="500"
         Height="300"
 		x:DataType="vm:ResultsWindowViewModel">
@@ -18,11 +18,11 @@
 	</Design.DataContext>
 	
 	<Canvas>
-		<Border Canvas.Left="100" Canvas.Top="30" Background="#EE1154" Width="200" Height="50" CornerRadius="10">
+		<Border Canvas.Left="100" Canvas.Top="30" Background="#969696" Width="200" Height="50" CornerRadius="10">
 			<TextBlock Text="Scan Results" FontSize="24" Margin="10" Foreground="White" HorizontalAlignment="Center"/>
 		</Border>
 		<ScrollViewer Canvas.Left="20" Canvas.Top="100" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-			<ListBox Name="scanResults" Background="#EE1154" Foreground="White" IsVisible="{Binding IsScanResultsVisible}" ItemsSource="{Binding ScanResults}"></ListBox>
+			<ListBox Name="scanResults" Background="#969696" Foreground="White" IsVisible="{Binding IsScanResultsVisible}" ItemsSource="{Binding ScanResults}"></ListBox>
 		</ScrollViewer>
 		<TextBlock Text="All Clear" FontSize="20" Margin="10" Foreground="White" Canvas.Left="20" Canvas.Top="150" IsVisible="{Binding IsResultBoxVisible}"/>
 	</Canvas>

@@ -7,8 +7,8 @@ Server::Server(SqliteHelper* db) {
     if (_serverSocket == -1)
         throw std::runtime_error("Server::Server() - socket");
 
-    //std::thread blocklist(system, "/bin/python3 /home/noam/implementations/Server/Blocklist.py");
-    //blocklist.detach();
+    std::thread blocklist(system, "/bin/python3 /home/noam/implementations/Server/Blocklist.py");
+    blocklist.detach();
 }
 
 Server::~Server()

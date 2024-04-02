@@ -8,7 +8,7 @@
         x:Class="UIclient2.Views.ArchivesWindow"
         x:DataType="vm:ArchivesWindowViewModel"
         Title="Linux Defender"
-        Background="#1C214F"
+        Background="#323232"
         Width="1000"
         Height="600">
 	<Design.DataContext>
@@ -22,7 +22,7 @@
 			<MenuItem Header="_Settings" Foreground="White" FontSize="20" Command="{Binding SettingsCommand}"/>
 		</StackPanel>
 		
-		<Border Canvas.Left="250" Canvas.Top="90" Background="#EE1154" Width="660" Height="50" CornerRadius="10">
+		<Border Canvas.Left="250" Canvas.Top="90" Background="#969696" Width="660" Height="50" CornerRadius="10">
             <TextBlock Text="Archives" FontSize="24" Margin="10" Foreground="White" HorizontalAlignment="Center"/>
         </Border>
 
@@ -30,9 +30,9 @@
 			<Button.Styles>
 				<Style>
 					<Style.Resources>
-						<SolidColorBrush x:Key="ButtonBackground" Color="#EE1154"/>
-						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF6688"/>
-						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#FF4D7A"/>
+						<SolidColorBrush x:Key="ButtonBackground" Color="#969696"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#6E6E6E"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1E1E1E"/>
 					</Style.Resources>
 				</Style>
 			</Button.Styles>
@@ -42,9 +42,9 @@
 			<Button.Styles>
 				<Style>
 					<Style.Resources>
-						<SolidColorBrush x:Key="ButtonBackground" Color="#EE1154"/>
-						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#FF6688"/>
-						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#FF4D7A"/>
+						<SolidColorBrush x:Key="ButtonBackground" Color="#969696"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#6E6E6E"/>
+						<SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1E1E1E"/>
 					</Style.Resources>
 				</Style>
 			</Button.Styles>
@@ -52,7 +52,7 @@
 
 		<controls:DataGrid x:Name="DataTable1"
                            ItemsSource="{Binding DataForTable1}"
-                           Background="#EE1154"
+                           Background="#969696"
                            Foreground="White"
                            AutoGenerateColumns="False"
                            IsVisible="{Binding IsTable1Visible}"
@@ -66,7 +66,7 @@
 
 		<controls:DataGrid x:Name="DataTable2"
                    ItemsSource="{Binding DataForTable2}"
-                   Background="#EE1154"
+                   Background="#969696"
                    Foreground="White"
                    AutoGenerateColumns="False"
                    IsVisible="{Binding IsTable2Visible}"

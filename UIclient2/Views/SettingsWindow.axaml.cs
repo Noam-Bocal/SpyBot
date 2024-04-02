@@ -30,7 +30,7 @@ public partial class SettingsWindow : Window
         Communication.SendMSG(111, "");
         string responseJson = Communication.GetMSG();
         var responseStruct = JsonConvert.DeserializeObject<Structs.GetFolderResponse>(responseJson.Substring(7));
-        _currentFolderToScan = @"\\wsl.localhost\Ubuntu" + responseStruct.folder.Replace("/", "\\");
+        _currentFolderToScan = responseStruct.folder;
 
         Communication.SendMSG(110, "");
         string respJson = Communication.GetMSG();
@@ -56,8 +56,7 @@ public partial class SettingsWindow : Window
                 if (task.Status == TaskStatus.RanToCompletion && !string.IsNullOrEmpty(task.Result))
                 {
                     string selectedFolder = task.Result;
-                    string realFolderPath = selectedFolder.Replace(@"\\wsl.localhost\Ubuntu", "").Replace("\\", "/");
-                    FolderData data = new FolderData { folder = realFolderPath };
+                    FolderData data = new FolderData { folder = selectedFolder };
                     string json = JsonConvert.SerializeObject(data);
                     Communication.SendMSG(109, json);
 

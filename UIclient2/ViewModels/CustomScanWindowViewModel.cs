@@ -20,7 +20,7 @@ namespace UIclient2.ViewModels
 {
     public class YaraData
     {
-        public string pathToYara { get; set; } = "python3 \"/home/noam/implementations/yara_scanner/yara_main.py";
+        public string pathToYara { get; set; } = "python3 \"/home/noam/Desktop/implementations/yara_scanner/yara_main.py";
         public string pathToScan { get; set; }
         public string scanType { get; set; }
         public string recursive { get; set; }
@@ -33,17 +33,18 @@ namespace UIclient2.ViewModels
 
     public class SaveHash
     {
-        public string FileName;
-        public string FilePath;
-        public string FileHash_SHA256;
+       
+        public string fileName;
+        public string filepath;
+        public string hash;
         public string DateAdded;
-        public bool Encrypted = true;
-        public string SourceDetection = "Noam's Computer";
-        public string IsolationStatus = "Free";
+        public bool encrypted = true;
+        public string source = "Noam's Computer";
+        public string isolationStatus = "Free";
         }
     public class CustomScanWindowViewModel : ViewModelBase
     {
-        public string pathToYara = "python3 \"/home/user/Desktop/implementations/yara_scanner/yara_main.py";
+        public string pathToYara = "python3 \"/home/noam/Desktop/implementations/yara_scanner/yara_main.py";
         private CustomScanWindow _customScanWindow;
 
         public ReactiveCommand<Unit, Unit> HomeCommand { get; }
@@ -99,14 +100,13 @@ namespace UIclient2.ViewModels
                     var openFileDialog = new OpenFileDialog
                     {
                         Title = "Select File",
-                        Directory = @"\\wsl.localhost\Ubuntu",
+                        Directory = ".",
                         AllowMultiple = false,
                     };
                     string[] filePaths = await openFileDialog.ShowAsync(window);
                     if (filePaths != null && filePaths.Length > 0)
                     {
-                        string filePath = filePaths[0].Replace(@"\\wsl.localhost\Ubuntu", "").Replace("\\", "/");
-                        string[] yara_results = await Task.Run(() => yara_scan(filePath, "--scan-file", ""));
+                        string[] yara_results = await Task.Run(() => yara_scan(filePaths[0], "--scan-file", ""));
                         Dictionary<string,string> hash_results = await Task.Run(() => HashScan(filePaths));
                         string[] final_results = CompareResults(yara_results, hash_results);
                         ResultsScanWindow resultsScanWindow = new ResultsScanWindow(final_results);
@@ -118,13 +118,12 @@ namespace UIclient2.ViewModels
                     var openFolderDialog = new OpenFolderDialog
                     {
                         Title = "Select Folder",
-                        Directory = @"\\wsl.localhost\Ubuntu",
+                        Directory = ".",
                     };
                     string folderPath = await openFolderDialog.ShowAsync(window);
                     if (!string.IsNullOrEmpty(folderPath))
                     {
-                        string folder = folderPath.Replace(@"\\wsl.localhost\Ubuntu", "").Replace("\\", "/");
-                        string[] yaraResults = await Task.Run(() => yara_scan(folder, "--scan-dir", "--recursive"));
+                        string[] yaraResults = await Task.Run(() => yara_scan(folderPath, "--scan-dir", "--recursive"));
                         string[] files = GetFilesInFolder(folderPath);
                         Dictionary<string, string> hashResults = await Task.Run(() => HashScan(files));
                         string[] final_results = CompareResults(yaraResults, hashResults);
@@ -182,25 +181,30 @@ namespace UIclient2.ViewModels
 
 
 
+       
+
+
+
         private string[] CompareResults(string[] yaraResults, Dictionary<string, string> hashResults)
         {
             string[] results = new string[yaraResults.Length];
 
             for (int i = 0; i < yaraResults.Length; i++)
             {
-                if (yaraResults[i].Contains("Malicious") && !hashResults.ContainsKey(yaraResults[i].Split(" - ")[0]))
+                string hashFile = yaraResults[i].Split(" - ")[0];
+                if (yaraResults[i].Contains("Malicious") && hashResults[Communication.HashFile(hashFile)] == "Clear")
                 {
                     // Get the hash value from hashResults using the file name as the key
-                    string hashValue = hashResults[yaraResults[i].Split(" - ")[0]];
+                    string hashValue = Communication.HashFile(hashFile);
                     SaveHash data = new SaveHash
                     {
-                        FileName = "File",
-                        FilePath = yaraResults[i].Split(" - ")[0],
-                        FileHash_SHA256 = hashValue,
+                        fileName = "File",
+                        filepath = yaraResults[i].Split(" - ")[0],
+                        hash = hashValue,
                         DateAdded = DateTime.Now.ToString(), // Add the current date/time
-                        Encrypted = true,
-                        SourceDetection = "Noam's Computer",
-                        IsolationStatus = "Free"
+                        encrypted = true,
+                        source = "Noam's Computer",
+                        isolationStatus = "Free"
                     };
                     // Save the hash data or perform other actions as needed
                     string json = JsonConvert.SerializeObject(data);
@@ -211,12 +215,12 @@ namespace UIclient2.ViewModels
 
                 }
                 // Check if both YARA and hash results indicate the file as malicious
-                if (yaraResults[i].Contains("Malicious") && hashResults[yaraResults[i].Split(" - ")[0]] == "Malicious")
+                if (yaraResults[i].Contains("Malicious") && hashResults.FirstOrDefault().Value == "Malicious")
                 {
                     results[i] = yaraResults[i]; // Keep the YARA result
                 }
                 // Check if either YARA or hash result indicates the file as malicious
-                else if (yaraResults[i].Contains("Malicious") || hashResults[yaraResults[i].Split(" - ")[0]] == "Malicious")
+                else if (yaraResults[i].Contains("Malicious") || hashResults.FirstOrDefault().Value == "Malicious")
                 {
                     results[i] = yaraResults[i].Split(" - ")[0] + " - Malicious";
                 }
@@ -228,6 +232,7 @@ namespace UIclient2.ViewModels
 
             return results;
         }
+
 
 
         private string[] GetFilesInFolder(string folderPath)

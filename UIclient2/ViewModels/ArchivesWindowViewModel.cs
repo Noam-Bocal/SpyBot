@@ -104,7 +104,7 @@ namespace UIclient2.ViewModels
         {
             try
             {
-                string procPath = @$"\\wsl.localhost\Ubuntu\proc\{pid}\comm";
+                string procPath = @$"/proc/{pid}/comm";
                 if (File.Exists(procPath))
                     return File.ReadAllText(procPath).Trim();
                 return null;

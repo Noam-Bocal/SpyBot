@@ -19,3 +19,4 @@ rm spybot.mod.o
 rm .spybot.mod.o.cmd
 
 sudo rmmod spybot
+sudo rm /dev/spybot

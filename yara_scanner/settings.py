@@ -2,14 +2,14 @@
 tmp_directory = 'tmp'
 
 # Compiled rules directory
-yara_rules_directory = 'yara-rules'
-quick_yara_rules_directory = 'quick-yara-rules'
-memory_yara_rules_directory = 'memory-yara-rules'
+yara_rules_directory = '/home/noam/Desktop/implementations/yara_scanner/yara-rules'
+quick_yara_rules_directory = '/home/noam/Desktop/implementations/yara_scanner/quick-yara-rules'
+memory_yara_rules_directory = '/home/noam/Desktop/implementations/yara_scanner/memory-yara-rules'
 
 # Uncompiled rules directory (Src). Yara rules in this diectory will be compiled automatically when start
-yara_rules_src_directory = 'yara-rules-src'
-quick_yara_rules_src_directory = 'quick-yara-rules-src'
-memory_yara_rules_src_directory = 'memory-yara-rules-src'
+yara_rules_src_directory = '/home/noam/Desktop/implementations/yara_scanner/yara-rules-src'
+quick_yara_rules_src_directory = '/home/noam/Desktop/implementations/yara_scanner/quick-yara-rules-src'
+memory_yara_rules_src_directory = '/home/noam/Desktop/implementations/yara_scanner/memory-yara-rules-src'
 
 yara_rules_repo_download_urls = [
     {'name': 'red_team_tool_countermeasures',

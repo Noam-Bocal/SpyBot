@@ -26,6 +26,9 @@ private:
     static void packetScan(); //scans for packets that speak with malicous ips
     static void portsConnectionsScan(); //scans if a computer on the same netwrok sends many conenction requests in a short time
     static void openPortsScan(); //scans for open ports on the computer
+    static void blockPid(int pid); // block pid
+    static void sctScan(); //scan hooks in the sct 
+    static void idtScan(); //scan hooks in the idt
 
     static void writeToScanResults(const string& message);
 
